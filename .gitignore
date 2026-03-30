@@ -1,0 +1,4 @@
+bin/
+scripts/.venv/
+.DS_Store
+*.save
