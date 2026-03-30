@@ -55,6 +55,9 @@ jobs:
           cp site/index.html _site/index.html
 
       - uses: actions/configure-pages@v5
+        with:
+          # Creates / enables Pages with GitHub Actions as source when not set up yet
+          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
