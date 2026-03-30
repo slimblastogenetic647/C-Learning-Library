@@ -1133,6 +1133,82 @@ let isSplit    = sessionStorage.getItem("cp_split") === "1";
 let hintOff    = sessionStorage.getItem("cp_hint")  === "1";
 let hintTimer  = null;
 let jscppReady = false;   // set after loadJSCPP() resolves
+/* After a run, output may be reference-only (fallback); lock edits until Reset / new file */
+let fallbackEditLock = false;
+
+function canEditSource() {
+  return jscppReady && !fallbackEditLock;
+}
+
+function highlightEditorText(text) {
+  curSrc = text;
+  const hlCode = document.getElementById("edCode");
+  const lineEl = document.getElementById("lineCount");
+  const ta = document.getElementById("edTa");
+  if (!hlCode || !lineEl) return;
+  hlCode.textContent = text.endsWith("\n") ? text + " " : text;
+  hljs.highlightElement(hlCode);
+  lineEl.textContent = text.split("\n").length + " lines";
+  const rb = document.getElementById("resetBtn");
+  if (rb) rb.hidden = ta ? (text === origSrc.replace(/\/\*[\s\S]*?\*\/\n+/, "").trim()) : true;
+}
+
+function fillEditorStatusBar() {
+  const wrap = document.getElementById("edStatusDynamic");
+  const ta = document.getElementById("edTa");
+  if (!wrap || !ta) return;
+  if (!jscppReady) {
+    wrap.innerHTML = `<span style="color:rgba(251,191,36,0.6);font-size:11px">read-only — compiler offline</span>`;
+    return;
+  }
+  if (fallbackEditLock) {
+    wrap.innerHTML = `
+      <span style="color:rgba(251,191,36,0.6);font-size:11px">read-only — fallback output</span>
+      <button type="button" class="reset-btn" id="resetBtn">↩ Reset</button>`;
+    document.getElementById("resetBtn").onclick = () => {
+      fallbackEditLock = false;
+      const clean = origSrc.replace(/\/\*[\s\S]*?\*\/\n+/, "").trim();
+      ta.value = clean;
+      highlightEditorText(clean);
+      syncEditorReadOnlyUi();
+      updateRunButtonHint();
+      fillEditorStatusBar();
+      wireEditorInputHandlers();
+    };
+    return;
+  }
+  wrap.innerHTML = `
+    <button type="button" class="reset-btn" id="resetBtn" hidden>↩ Reset</button>
+    <span style="color:var(--text-3)">⌘↵ to run</span>`;
+  document.getElementById("resetBtn").onclick = () => {
+    fallbackEditLock = false;
+    const clean = origSrc.replace(/\/\*[\s\S]*?\*\/\n+/, "").trim();
+    ta.value = clean;
+    highlightEditorText(clean);
+    syncEditorReadOnlyUi();
+    updateRunButtonHint();
+  };
+}
+
+function refreshEditorAfterRunModeChange() {
+  syncEditorReadOnlyUi();
+  updateRunButtonHint();
+  fillEditorStatusBar();
+  wireEditorInputHandlers();
+}
+
+function updateRunButtonHint() {
+  if (!runBtn) return;
+  if (!jscppReady) {
+    runBtn.classList.add("reference-only");
+    runBtn.title = "Shows pre-baked reference output — live compiler unavailable";
+    return;
+  }
+  runBtn.classList.toggle("reference-only", fallbackEditLock);
+  runBtn.title = fallbackEditLock
+    ? "Last run used reference output — click Reset to edit, then Run again"
+    : "Run edited code (⌘↵)";
+}
 
 /* ── DOM refs ──────────────────────────────────────────────── */
 const app         = document.getElementById("app");
@@ -1216,6 +1292,8 @@ function setTab(tab) {
 
 /* ── Load a file ───────────────────────────────────────────── */
 async function selectFile(file, chapter, el) {
+  fallbackEditLock = false;
+
   document.querySelectorAll(".file-item").forEach(e => e.classList.remove("selected"));
   el.classList.add("selected");
 
@@ -1293,75 +1371,79 @@ function renderEditor(raw) {
     html += `</div>`;
   }
 
-  const roClass = jscppReady ? "" : " readonly";
-  const statusRO = jscppReady
-    ? `<button class="reset-btn" id="resetBtn" hidden>↩ Reset</button>
-       <div class="status-ml"><span style="color:var(--text-3)">⌘↵ to run</span></div>`
-    : `<span style="color:rgba(251,191,36,0.6);font-size:11px">read-only — compiler offline</span>`;
+  const roClass = canEditSource() ? "" : " readonly";
 
   html += `
     <div class="editor-box${roClass}" id="editorBox">
       <div class="ed-scroll">
         <textarea class="ed-ta" id="edTa"
           spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"
-          ${jscppReady ? "" : 'readonly tabindex="-1" aria-label="Code (read-only — compiler unavailable)"'}
+          ${canEditSource() ? "" : 'readonly tabindex="-1" aria-label="Code (read-only)"'}
         ></textarea>
         <pre class="ed-hl" id="edHl" aria-hidden="true"><code class="language-c" id="edCode"></code></pre>
       </div>
       <div class="ed-status">
         <span class="status-lang">C</span>
         <span id="lineCount" style="color:var(--text-3)"></span>
-        ${statusRO}
+        <div class="status-ml" id="edStatusDynamic"></div>
       </div>
     </div>`;
 
   editorPane.innerHTML = html;
 
-  const ta       = document.getElementById("edTa");
-  const hlPre    = document.getElementById("edHl");
-  const hlCode   = document.getElementById("edCode");
-  const lineEl   = document.getElementById("lineCount");
-  const resetBtn = jscppReady ? document.getElementById("resetBtn") : null;
-
-  function highlight(text) {
-    curSrc = text;
-    hlCode.textContent = text.endsWith("\n") ? text + " " : text;
-    hljs.highlightElement(hlCode);
-    lineEl.textContent = text.split("\n").length + " lines";
-    if (resetBtn) {
-      resetBtn.hidden = (text === origSrc.replace(/\/\*[\s\S]*?\*\/\n+/, "").trim());
-    }
-  }
-
+  const ta = document.getElementById("edTa");
   ta.value = code;
-  highlight(code);
+  highlightEditorText(code);
+  updateRunButtonHint();
+  fillEditorStatusBar();
+  wireEditorInputHandlers();
 
-  if (jscppReady) {
-    ta.oninput  = () => highlight(ta.value);
-    ta.onscroll = () => { hlPre.scrollTop = ta.scrollTop; hlPre.scrollLeft = ta.scrollLeft; };
+  scheduleHintCheck();
+}
+
+function syncEditorReadOnlyUi() {
+  const ta = document.getElementById("edTa");
+  const box = document.getElementById("editorBox");
+  if (!ta || !box) return;
+  const allow = canEditSource();
+  box.classList.toggle("readonly", !allow);
+  ta.readOnly = !allow;
+  if (allow) {
+    ta.removeAttribute("tabindex");
+    ta.setAttribute("aria-label", "C source code");
+  } else {
+    ta.tabIndex = -1;
+    ta.setAttribute(
+      "aria-label",
+      !jscppReady ? "C source (read-only — compiler unavailable)"
+        : "C source (read-only — showing reference output)"
+    );
+  }
+}
+
+function wireEditorInputHandlers() {
+  const ta    = document.getElementById("edTa");
+  const hlPre = document.getElementById("edHl");
+  if (!ta || !hlPre) return;
+
+  ta.oninput = null;
+  ta.onkeydown = null;
+  ta.onscroll = () => { hlPre.scrollTop = ta.scrollTop; hlPre.scrollLeft = ta.scrollLeft; };
+
+  if (canEditSource()) {
+    ta.oninput = () => highlightEditorText(ta.value);
     ta.onkeydown = e => {
       if (e.key === "Tab") {
         e.preventDefault();
         const s = ta.selectionStart, end = ta.selectionEnd;
         ta.value = ta.value.slice(0, s) + "    " + ta.value.slice(end);
         ta.selectionStart = ta.selectionEnd = s + 4;
-        highlight(ta.value);
+        highlightEditorText(ta.value);
       }
     };
-    if (resetBtn) {
-      resetBtn.onclick = () => {
-        const clean = origSrc.replace(/\/\*[\s\S]*?\*\/\n+/, "").trim();
-        ta.value = clean;
-        highlight(clean);
-      };
-    }
-  } else {
-    /* Keep scroll sync even in read-only so highlight layer follows */
-    ta.onscroll = () => { hlPre.scrollTop = ta.scrollTop; hlPre.scrollLeft = ta.scrollLeft; };
   }
-
-  scheduleHintCheck();
 }
+
 
 /* ── Layout hint ───────────────────────────────────────────── */
 function scheduleHintCheck() {
@@ -1409,12 +1491,19 @@ function executeCode() {
     const text = ok ? out.join("") : (BAKED[curPath] || "(no output)");
     const type = ok ? "live" : "fallback";
 
+    if (jscppReady) {
+      if (type === "fallback") fallbackEditLock = true;
+      else fallbackEditLock = false;
+    }
+
     typeOutput(text, type);
     termBadge.className = `term-badge ${type} show`;
     badgeLabel.textContent = type;
 
     runBtn.classList.remove("running");
     runBtn.disabled = false;
+
+    refreshEditorAfterRunModeChange();
 
     /* Mobile: dot on output tab + auto-switch */
     outDot.classList.add("on");
@@ -1507,10 +1596,8 @@ loadJSCPP().then(ok => {
   jscppReady = ok;
   if (!ok) {
     console.warn("JSCPP unavailable — editing disabled, Run shows reference output.");
-    /* Mark the Run button so users get a visual hint */
-    runBtn.classList.add("reference-only");
-    runBtn.title = "Shows pre-baked reference output — live compiler unavailable";
   }
+  updateRunButtonHint();
   buildTree();
   bindEvents();
   applySplit(isSplit);
