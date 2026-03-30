@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>C Playground — C Learning Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+
+  <style>
+    /* ── Design tokens ─────────────────────────────────────────── */
+    :root {
+      --bg:       #0d0d12;
+      --surf-1:   #14141c;
+      --surf-2:   #1b1b26;
+      --surf-3:   #232332;
+      --border:   rgba(255,255,255,0.07);
+      --border-2: rgba(255,255,255,0.13);
+
+      --text-1: #e0e0ef;
+      --text-2: #8080a0;
+      --text-3: #48485e;
+
+      --accent:   #7c72f0;
+      --accent-b: #4ec9eb;
+      --success:  #34d399;
+      --warning:  #fbbf24;
+      --danger:   #f87171;
+
+      --grad: linear-gradient(135deg, #7c72f0 0%, #4ec9eb 100%);
+
+      --font-ui:   'Inter', system-ui, -apple-system, sans-serif;
+      --font-code: 'SF Mono', Menlo, Monaco, Consolas, 'Courier New', monospace;
+
+      --r-sm: 6px;
+      --r-md: 10px;
+      --r-lg: 14px;
+
+      --sidebar-w:    240px;
+      --toolbar-h:    48px;
+      --terminal-h:   256px;
+      --nav-h:        56px;
+
+      --ease:   cubic-bezier(0.4, 0, 0.2, 1);
+      --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ── Reset ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--text-1);
+      font-family: var(--font-ui);
+      font-size: 13px;
+      line-height: 1.5;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    code, pre { font-family: var(--font-code); }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--surf-3); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+
+    /* ── Animated top gradient bar ─────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #7c72f0, #4ec9eb, #34d399, #4ec9eb, #7c72f0);
+      background-size: 300% 100%;
+      animation: gradient-pan 8s linear infinite;
+      z-index: 9999;
+    }
+    @keyframes gradient-pan {
+      from { background-position: 0% 0%; }
+      to   { background-position: 300% 0%; }
+    }
+
+    /* ── App shell ─────────────────────────────────────────────── */
+    .app {
+      display: flex;
+      height: 100%;
+      padding-top: 2px;
+    }
+
+    /* ── Sidebar ───────────────────────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surf-1);
+      border-right: 0.5px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .sidebar-header {
+      padding: 14px 16px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 0.5px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .logo-mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: var(--grad);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-info { flex: 1; min-width: 0; }
+    .logo-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-1);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .logo-sub {
+      font-size: 11px;
+      color: var(--text-3);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-close {
+      display: none;
+      color: var(--text-2);
+      padding: 8px;
+      min-width: 44px;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--r-sm);
+      transition: background 120ms;
+      flex-shrink: 0;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .sidebar-close:hover { background: var(--surf-3); color: var(--text-1); }
+
+    .file-tree {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 6px 16px;
+    }
+
+    .chapter-group { margin-bottom: 2px; }
+
+    .chapter-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 10px 4px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-3);
+      user-select: none;
+    }
+    .ch-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .file-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: 8px 10px 8px 18px;
+      margin: 1px 0;
+      border-radius: var(--r-sm);
+      font-size: 12.5px;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: color 100ms var(--ease), background 100ms var(--ease);
+      user-select: none;
+      gap: 7px;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: rgba(124,114,240,0.15);
+    }
+    .file-item::before {
+      content: '';
+      position: absolute;
+      left: 8px; top: 50%;
+      transform: translateY(-50%);
+      width: 3px; height: 0;
+      border-radius: 2px;
+      background: var(--accent);
+      transition: height 150ms var(--spring);
+    }
+    .file-item:hover { background: var(--surf-2); color: var(--text-1); }
+    .file-item.selected {
+      background: rgba(124,114,240,0.1);
+      color: var(--text-1);
+    }
+    .file-item.selected::before { height: 14px; }
+
+    /* ── Overlay ───────────────────────────────────────────────── */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 140;
+      opacity: 0;
+      transition: opacity 220ms var(--ease);
+      /* Critical: invisible overlay must not steal taps (mobile bottom nav, main UI) */
+      pointer-events: none;
+    }
+    .overlay.on {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ── Main ──────────────────────────────────────────────────── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    /* ── Toolbar ───────────────────────────────────────────────── */
+    .toolbar {
+      height: var(--toolbar-h);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 18px;
+      border-bottom: 0.5px solid var(--border);
+      background: rgba(13,13,18,0.85);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      flex-shrink: 0;
+    }
+
+    .hamburger {
+      display: none;
+      color: var(--text-2);
+      padding: 6px;
+      border-radius: var(--r-sm);
+      border: 0.5px solid var(--border);
+      line-height: 0;
+      transition: background 120ms, color 120ms;
+    }
+    .hamburger:hover { background: var(--surf-2); color: var(--text-1); }
+
+    .breadcrumbs {
+      flex: 1;
+      font-size: 13px;
+      color: var(--text-3);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .bc-chapter { color: var(--text-3); }
+    .bc-sep { margin: 0 5px; color: var(--text-3); opacity: 0.5; }
+    .bc-file { color: var(--text-1); font-weight: 500; }
+
+    .tb-actions { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+
+    /* Small icon button */
+    .ico-btn {
+      width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--surf-2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text-2);
+      transition: background 120ms, color 120ms, border-color 120ms;
+      line-height: 0;
+    }
+    .ico-btn:hover { background: var(--surf-3); color: var(--text-1); border-color: var(--border-2); }
+
+    .layout-btn {
+      height: 30px;
+      padding: 0 10px;
+      background: var(--surf-2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text-2);
+      font-size: 12px;
+      font-weight: 500;
+      display: flex; align-items: center; gap: 6px;
+      transition: background 120ms, color 120ms, border-color 120ms;
+      white-space: nowrap;
+    }
+    .layout-btn:hover { background: var(--surf-3); color: var(--text-1); border-color: var(--border-2); }
+    .layout-btn[aria-pressed="true"] { border-color: rgba(124,114,240,0.5); color: var(--accent); background: rgba(124,114,240,0.08); }
+
+    /* Run button */
+    .run-btn {
+      height: 30px;
+      padding: 0 14px;
+      border-radius: var(--r-sm);
+      background: var(--grad);
+      background-size: 200% 100%;
+      color: #fff;
+      font-size: 12.5px;
+      font-weight: 600;
+      display: flex; align-items: center; gap: 6px;
+      transition: opacity 120ms, transform 120ms var(--ease), box-shadow 200ms;
+      position: relative;
+      overflow: hidden;
+    }
+    .run-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.12);
+      opacity: 0;
+      transition: opacity 120ms;
+    }
+    .run-btn:hover::after { opacity: 1; }
+    .run-btn:not(:disabled):hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(124,114,240,0.35);
+    }
+    .run-btn:active { transform: translateY(0) !important; box-shadow: none !important; }
+    .run-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .run-btn.running .run-icon-wrap { display: none; }
+    .run-btn.running .spin { display: block; }
+    .run-btn .spin {
+      display: none;
+      width: 12px; height: 12px;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.5s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .run-shortcut { font-size: 10px; opacity: 0.55; font-weight: 400; letter-spacing: 0.02em; }
+
+    /* ── Layout hint ───────────────────────────────────────────── */
+    .layout-hint {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      padding: 7px 18px;
+      background: rgba(124,114,240,0.09);
+      border-bottom: 0.5px solid rgba(124,114,240,0.18);
+      font-size: 12px;
+      color: var(--text-2);
+      flex-shrink: 0;
+      animation: slideDown 200ms var(--ease) both;
+    }
+    .layout-hint.on { display: flex; }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hint-actions { display: flex; gap: 7px; align-items: center; margin-left: auto; flex-shrink: 0; }
+    .hint-apply {
+      background: var(--accent);
+      color: #fff;
+      border-radius: var(--r-sm);
+      padding: 3px 10px;
+      font-size: 11.5px;
+      font-weight: 600;
+      transition: opacity 120ms;
+    }
+    .hint-apply:hover { opacity: 0.85; }
+    .hint-dismiss {
+      border: 0.5px solid var(--border);
+      color: var(--text-2);
+      border-radius: var(--r-sm);
+      padding: 3px 8px;
+      font-size: 11.5px;
+      transition: background 120ms;
+    }
+    .hint-dismiss:hover { background: var(--surf-2); }
+
+    /* ── Workspace ─────────────────────────────────────────────── */
+    .workspace {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    /* ── Editor pane ───────────────────────────────────────────── */
+    .editor-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 18px;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    /* Metadata card */
+    .meta-card {
+      background: var(--surf-1);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 13px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .meta-row { display: flex; gap: 12px; font-size: 12.5px; }
+    .meta-key {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-3);
+      width: 62px;
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+    .meta-val { color: var(--text-2); line-height: 1.5; }
+
+    /* Editor box */
+    .editor-box {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      border-radius: var(--r-md);
+      background: #11111a;
+      border: 0.5px solid var(--border);
+      overflow: hidden;
+      flex: 1;
+      min-height: 200px;
+      transition: border-color 200ms, box-shadow 200ms;
+    }
+    .editor-box:focus-within {
+      border-color: rgba(124,114,240,0.4);
+      box-shadow: 0 0 0 3px rgba(124,114,240,0.07), 0 0 24px rgba(124,114,240,0.06);
+    }
+
+    .ed-scroll { position: relative; flex: 1; overflow: hidden; }
+
+    .ed-ta, .ed-hl {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      padding: 16px 20px;
+      margin: 0;
+      font-family: var(--font-code);
+      font-size: 13.5px;
+      line-height: 1.7;
+      tab-size: 4;
+      white-space: pre;
+      overflow: auto;
+      border: none;
+    }
+    .ed-ta {
+      background: transparent;
+      color: transparent;
+      caret-color: var(--text-1);
+      resize: none;
+      outline: none;
+      z-index: 1;
+      -webkit-text-fill-color: transparent;
+    }
+    .ed-hl {
+      background: transparent;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .ed-hl code { padding: 0; background: transparent; font-size: inherit; line-height: inherit; }
+
+    /* Status bar */
+    .ed-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 16px;
+      background: rgba(0,0,0,0.25);
+      border-top: 0.5px solid var(--border);
+      font-size: 11px;
+      color: var(--text-3);
+      flex-shrink: 0;
+    }
+    .status-lang {
+      background: var(--surf-2);
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .status-ml { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+    .reset-btn {
+      color: var(--warning);
+      border: 0.5px solid rgba(251,191,36,0.25);
+      background: rgba(251,191,36,0.06);
+      border-radius: 3px;
+      padding: 1px 7px;
+      font-size: 10.5px;
+      font-family: inherit;
+      transition: background 120ms;
+    }
+    .reset-btn:hover { background: rgba(251,191,36,0.12); }
+
+    /* ── Terminal pane ─────────────────────────────────────────── */
+    .terminal-pane {
+      height: var(--terminal-h);
+      background: #08080e;
+      border-top: 0.5px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .term-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 14px;
+      height: 34px;
+      background: rgba(255,255,255,0.02);
+      border-bottom: 0.5px solid var(--border);
+      flex-shrink: 0;
+    }
+    .term-dots { display: flex; gap: 5px; }
+    .term-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .term-dot.r { background: #ff5f57; }
+    .term-dot.y { background: #febc2e; }
+    .term-dot.g { background: #28c840; }
+
+    .term-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-3);
+    }
+
+    .term-badge {
+      display: none;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px 7px;
+      border-radius: 4px;
+      animation: fadeSlideIn 180ms var(--ease) both;
+    }
+    .term-badge.show { display: flex; }
+    .term-badge.live {
+      background: rgba(52,211,153,0.1);
+      color: var(--success);
+      border: 0.5px solid rgba(52,211,153,0.22);
+    }
+    .term-badge.live .bdot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--success);
+      animation: pulse-dot 2.2s ease-in-out infinite;
+    }
+    .term-badge.fallback {
+      background: rgba(255,255,255,0.04);
+      color: var(--text-3);
+      border: 0.5px solid var(--border);
+    }
+    .term-badge.fallback .bdot {
+      width: 5px; height: 5px; border-radius: 50%;
+      border: 1.5px solid var(--text-3);
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.35; }
+    }
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateX(8px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .term-actions { margin-left: auto; display: flex; gap: 4px; }
+    .term-action {
+      color: var(--text-3);
+      padding: 3px 8px;
+      border-radius: var(--r-sm);
+      font-size: 11px;
+      font-family: inherit;
+      transition: color 100ms, background 100ms;
+    }
+    .term-action:hover { color: var(--text-2); background: rgba(255,255,255,0.05); }
+
+    .term-out {
+      flex: 1;
+      padding: 12px 18px;
+      overflow-y: auto;
+      font-family: var(--font-code);
+      font-size: 13px;
+      color: var(--success);
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-break: break-all;
+      position: relative;
+    }
+    /* Subtle CRT scanlines */
+    .term-out::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent 0px,
+        transparent 2px,
+        rgba(0,0,0,0.035) 2px,
+        rgba(0,0,0,0.035) 4px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+    .term-placeholder { color: var(--text-3); font-family: var(--font-ui); font-size: 12px; }
+
+    /* ── Empty / loading ───────────────────────────────────────── */
+    .empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--text-3);
+      font-size: 13px;
+      text-align: center;
+      padding: 40px;
+    }
+    .empty-emoji { font-size: 30px; margin-bottom: 4px; opacity: 0.4; }
+
+    /* ── Two-column split ──────────────────────────────────────── */
+    .app.split .workspace { flex-direction: row; align-items: stretch; }
+    .app.split .editor-pane {
+      flex: 1;
+      min-width: 0;
+      border-right: 0.5px solid var(--border);
+      overflow-y: auto;
+    }
+    .app.split .terminal-pane {
+      flex: 0 0 400px;
+      height: auto !important;
+      border-top: none;
+    }
+
+    /* ── Mobile bottom nav ─────────────────────────────────────── */
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      background: rgba(11,11,16,0.97);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border-top: 0.5px solid var(--border);
+      /* Above main content; drawer (160) still covers when open */
+      z-index: 150;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .nav-inner { display: flex; height: 100%; padding: 0 8px; }
+    .nav-tab {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      color: var(--text-3);
+      font-size: 10.5px;
+      font-weight: 500;
+      font-family: inherit;
+      border-radius: var(--r-md);
+      padding: 6px;
+      position: relative;
+      transition: color 120ms;
+      touch-action: manipulation;
+      min-height: 44px;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .nav-tab.active { color: var(--accent); }
+    .nav-tab-ico { font-size: 19px; line-height: 1; }
+    .nav-tab-dot {
+      position: absolute;
+      top: 9px; right: calc(50% - 18px);
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+      border: 1.5px solid var(--bg);
+      display: none;
+      animation: popIn 200ms var(--spring) both;
+    }
+    .nav-tab-dot.on { display: block; }
+    @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+
+    /* highlight.js override */
+    .hljs { background: transparent !important; padding: 0 !important; }
+
+    /* ── Read-only editor state (no JSCPP) ─────────────────── */
+    .editor-box.readonly .ed-ta {
+      cursor: default;
+      pointer-events: none; /* prevent typing */
+    }
+    .editor-box.readonly {
+      border-color: rgba(255,255,255,0.04);
+    }
+    .editor-box.readonly:focus-within {
+      border-color: rgba(255,255,255,0.04);
+      box-shadow: none;
+    }
+    .editor-box.readonly .ed-status {
+      background: rgba(251,191,36,0.04);
+      border-top-color: rgba(251,191,36,0.12);
+    }
+
+    /* JSCPP status banner */
+    .jscpp-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      padding: 12px 14px;
+      border-radius: var(--r-md);
+      border: 0.5px solid rgba(251,191,36,0.22);
+      background: rgba(251,191,36,0.07);
+      font-size: 12.5px;
+      color: var(--text-2);
+      line-height: 1.55;
+      animation: slideDown 220ms var(--ease) both;
+    }
+    .jscpp-banner-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .jscpp-banner strong { color: var(--warning); font-weight: 600; }
+    .jscpp-banner code {
+      background: rgba(255,255,255,0.06);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 11.5px;
+      color: var(--text-1);
+    }
+
+    /* Run-btn reference-only state */
+    .run-btn.reference-only {
+      background: var(--surf-2);
+      border: 0.5px solid var(--border);
+      box-shadow: none;
+    }
+    .run-btn.reference-only:not(:disabled):hover {
+      box-shadow: none;
+      transform: none;
+      opacity: 0.85;
+    }
+    .run-btn.reference-only .run-icon-wrap svg { opacity: 0.6; }
+    .run-btn.reference-only .run-label::after { content: " (preview)"; }
+
+    /* ── Responsive ────────────────────────────────────────────── */
+    @media (max-width: 767px) {
+      /* Sidebar becomes a drawer */
+      .sidebar {
+        position: fixed;
+        top: 2px; left: 0;
+        bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
+        width: min(290px, 88vw);
+        max-width: 100%;
+        transform: translateX(-100%);
+        transition: transform 280ms var(--ease);
+        z-index: 160;
+        box-shadow: 6px 0 40px rgba(0,0,0,0.5);
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+      }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-close { display: flex; }
+      /* Drawer scrim: same vertical band as sidebar — never covers bottom nav */
+      .overlay {
+        display: block;
+        top: 2px;
+        bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
+      }
+
+      .hamburger {
+        display: flex;
+        touch-action: manipulation;
+        min-width: 40px;
+        min-height: 40px;
+        align-items: center;
+        justify-content: center;
+      }
+      .mobile-nav { display: flex; }
+      .main {
+        padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
+      }
+
+      /* Hide split toggle on mobile — not useful */
+      .layout-btn, .layout-hint { display: none !important; }
+
+      /* Tab switching */
+      .app[data-mt="code"]   .terminal-pane { display: none; }
+      .app[data-mt="output"] .editor-pane   { display: none; }
+      .app[data-mt="output"] .terminal-pane {
+        flex: 1;
+        height: auto !important;
+        border-top: none;
+      }
+      .app[data-mt="output"] .workspace { flex: 1; }
+
+      /* Reset any split on mobile */
+      .app.split .workspace { flex-direction: column !important; }
+      .app.split .editor-pane { border-right: none !important; }
+      .app.split .terminal-pane {
+        flex: none !important;
+        height: var(--terminal-h) !important;
+        border-top: 0.5px solid var(--border) !important;
+      }
+
+      .workspace { flex: 1; }
+      .editor-pane { flex: 1; }
+
+      /* Compact run btn on mobile */
+      .run-btn .run-label,
+      .run-btn .run-shortcut { display: none; }
+      .run-btn { padding: 0 12px; }
+      .toolbar { padding: 0 12px; gap: 8px; }
+    }
+
+    @media (min-width: 768px) and (max-width: 1100px) {
+      :root {
+        --sidebar-w: 210px;
+        --terminal-h: 220px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="app" id="app" data-mt="code">
+
+  <!-- Sidebar ───────────────────────────────────────────────── -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Example files">
+    <div class="sidebar-header">
+      <div class="logo-mark">C</div>
+      <div class="logo-info">
+        <div class="logo-name">C Playground</div>
+        <div class="logo-sub">Chamath Thiwanka</div>
+      </div>
+      <button type="button" class="sidebar-close" id="sidebarClose" aria-label="Close menu">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="file-tree" id="fileTree"></div>
+  </aside>
+
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Main ──────────────────────────────────────────────────── -->
+  <main class="main">
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <button type="button" class="hamburger" id="menuBtn" aria-label="Open files" aria-expanded="false" aria-controls="sidebar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 6h18M3 12h18M3 18h18"/>
+        </svg>
+      </button>
+
+      <div class="breadcrumbs" id="breadcrumbs">
+        <span style="color:var(--text-3)">Open a file →</span>
+      </div>
+
+      <div class="tb-actions">
+        <button class="ico-btn" id="copyBtn" title="Copy code" hidden>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2"/>
+            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+          </svg>
+        </button>
+        <button class="layout-btn" id="layoutBtn" aria-pressed="false" hidden>
+          <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="1" y="2" width="8" height="16" rx="1.5"/>
+            <rect x="11" y="2" width="8" height="16" rx="1.5"/>
+          </svg>
+          <span id="layoutLabel">Two columns</span>
+        </button>
+        <button class="run-btn" id="runBtn" disabled>
+          <span class="spin"></span>
+          <span class="run-icon-wrap">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </span>
+          <span class="run-label">Run</span>
+          <span class="run-shortcut">⌘↵</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Layout hint -->
+    <div class="layout-hint" id="layoutHint">
+      <span>Code extends past the window — <strong>Two columns</strong> fits code + output for a clean Snipping Tool capture.</span>
+      <div class="hint-actions">
+        <button class="hint-apply" id="hintApply">Use two columns</button>
+        <button class="hint-dismiss" id="hintDismiss">Dismiss</button>
+      </div>
+    </div>
+
+    <!-- Workspace -->
+    <div class="workspace" id="workspace">
+      <!-- Editor pane -->
+      <div class="editor-pane" id="editorPane">
+        <div class="empty" id="emptyState">
+          <div class="empty-emoji">⌨️</div>
+          <div>Select a file from the sidebar to begin</div>
+        </div>
+      </div>
+
+      <!-- Terminal pane -->
+      <div class="terminal-pane" id="terminalPane">
+        <div class="term-header">
+          <div class="term-dots">
+            <div class="term-dot r"></div>
+            <div class="term-dot y"></div>
+            <div class="term-dot g"></div>
+          </div>
+          <span class="term-title">Output</span>
+          <div class="term-badge" id="termBadge">
+            <span class="bdot"></span>
+            <span id="badgeLabel"></span>
+          </div>
+          <div class="term-actions">
+            <button class="term-action" id="clearBtn">Clear</button>
+            <button class="term-action" id="copyOutBtn">Copy</button>
+          </div>
+        </div>
+        <div class="term-out" id="termOut">
+          <span class="term-placeholder">Run a program to see output here.</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Mobile nav ─────────────────────────────────────────────── -->
+<nav class="mobile-nav" aria-label="Main navigation">
+  <div class="nav-inner">
+    <button type="button" class="nav-tab" id="ntFiles">
+      <span class="nav-tab-ico">📂</span>
+      <span>Files</span>
+    </button>
+    <button type="button" class="nav-tab active" id="ntCode">
+      <span class="nav-tab-ico">📝</span>
+      <span>Code</span>
+    </button>
+    <button type="button" class="nav-tab" id="ntOutput">
+      <span class="nav-tab-ico">▶</span>
+      <span>Output</span>
+      <span class="nav-tab-dot" id="outDot"></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Scripts ────────────────────────────────────────────────── -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/c.min.js"></script>
+<script>
+"use strict";
+
+/* ── JSCPP Loader ──────────────────────────────────────────── */
+function loadJSCPP() {
+  const URLS = [
+    "https://cdn.jsdelivr.net/npm/JSCPP@2.0.9/dist/JSCPP.es5.min.js",
+    "https://cdn.jsdelivr.net/gh/felixhao28/JSCPP@gh-pages/dist/JSCPP.es5.min.js"
+  ];
+  return new Promise(function (resolve) {
+    let i = 0;
+    function tryNext() {
+      if (i >= URLS.length) { resolve(false); return; }
+      const s = document.createElement("script");
+      s.src = URLS[i++];
+      s.onload = function () {
+        if (typeof JSCPP !== "undefined" && typeof JSCPP.run === "function") { resolve(true); }
+        else { s.remove(); tryNext(); }
+      };
+      s.onerror = function () { s.remove(); tryNext(); };
+      document.head.appendChild(s);
+    }
+    tryNext();
+  });
+}
+
+/* ── Chapter accent colours ────────────────────────────────── */
+const CH_COLORS = {
+  "01_hello_world":    "#34d399",
+  "02_operators":      "#4ec9eb",
+  "03_control_flow":   "#fbbf24",
+  "04_loops":          "#a78bfa",
+  "05_functions":      "#f472b6",
+  "06_arrays_strings": "#60a5fa",
+  "07_pointers":       "#fb923c",
+  "08_structs":        "#a3e635",
+};
+
+/* ── File manifest ─────────────────────────────────────────── */
+const MANIFEST = [
+  { id:"01_hello_world",    label:"01 Hello World & Variables", files:[
+    {name:"hello_world",    path:"topics/01_hello_world/hello_world.c"},
+    {name:"variables_types",path:"topics/01_hello_world/variables_types.c"}
+  ]},
+  { id:"02_operators",      label:"02 Operators", files:[
+    {name:"arithmetic",     path:"topics/02_operators/arithmetic.c"},
+    {name:"comparison",     path:"topics/02_operators/comparison.c"},
+    {name:"logical",        path:"topics/02_operators/logical.c"}
+  ]},
+  { id:"03_control_flow",   label:"03 Control Flow", files:[
+    {name:"if_else",        path:"topics/03_control_flow/if_else.c"},
+    {name:"switch_case",    path:"topics/03_control_flow/switch_case.c"}
+  ]},
+  { id:"04_loops",          label:"04 Loops", files:[
+    {name:"for_loop",       path:"topics/04_loops/for_loop.c"},
+    {name:"while_loop",     path:"topics/04_loops/while_loop.c"},
+    {name:"do_while",       path:"topics/04_loops/do_while.c"},
+    {name:"break_continue", path:"topics/04_loops/break_continue.c"},
+    {name:"goto_label",     path:"topics/04_loops/goto_label.c"}
+  ]},
+  { id:"05_functions",      label:"05 Functions", files:[
+    {name:"basic_functions",path:"topics/05_functions/basic_functions.c"},
+    {name:"recursion",      path:"topics/05_functions/recursion.c"},
+    {name:"pass_by_value",  path:"topics/05_functions/pass_by_value.c"}
+  ]},
+  { id:"06_arrays_strings", label:"06 Arrays & Strings", files:[
+    {name:"arrays_1d",      path:"topics/06_arrays_strings/arrays_1d.c"},
+    {name:"arrays_2d",      path:"topics/06_arrays_strings/arrays_2d.c"},
+    {name:"strings_basics", path:"topics/06_arrays_strings/strings_basics.c"}
+  ]},
+  { id:"07_pointers",       label:"07 Pointers", files:[
+    {name:"pointer_basics",     path:"topics/07_pointers/pointer_basics.c"},
+    {name:"pointer_arithmetic", path:"topics/07_pointers/pointer_arithmetic.c"}
+  ]},
+  { id:"08_structs",        label:"08 Structs", files:[
+    {name:"struct_basics",  path:"topics/08_structs/struct_basics.c"},
+    {name:"struct_array",   path:"topics/08_structs/struct_array.c"}
+  ]},
+];
+
+/* ── Pre-baked outputs (native gcc) ────────────────────────── */
+const BAKED = {
+  "topics/01_hello_world/hello_world.c":
+    "Hello, World!\n",
+  "topics/01_hello_world/variables_types.c":
+    "int count          = 42   (sizeof 4 bytes)\nfloat pi_approx    = 3.140000   (sizeof 4 bytes)\ndouble precise     = 3.1415926535 (sizeof 8 bytes)\nchar grade         = A   (ASCII 65, sizeof 1 bytes)\n",
+  "topics/02_operators/arithmetic.c":
+    "a + b = 22\na - b = 12\na * b = 85\na / b = 3   (integer division)\na % b = 2   (remainder)\n\nAs floating point: 17.00 / 5.00 = 3.40\n",
+  "topics/02_operators/comparison.c":
+    "x = 10, y = 20\n\nx == y  -> 0\nx != y  -> 1\nx < y   -> 1\nx > y   -> 0\nx <= y  -> 1\nx >= y  -> 0\n",
+  "topics/02_operators/logical.c":
+    "p  q  p && q  p || q  !p\n--------------------------------\n0  0     0       0      1\n0  1     0       1      1\n1  0     0       1      0\n1  1     1       1      0\n",
+  "topics/03_control_flow/if_else.c":
+    "Score: 87 -> B\n",
+  "topics/03_control_flow/switch_case.c":
+    "day = 3 -> Wednesday\n\nFall-through demo (no breaks): one two three\n",
+  "topics/04_loops/for_loop.c":
+    "Count 0..4:\n0 1 2 3 4 \n\nRow of 7 times table:\n7 x 1 = 7\n7 x 2 = 14\n7 x 3 = 21\n7 x 4 = 28\n7 x 5 = 35\n7 x 6 = 42\n7 x 7 = 49\n7 x 8 = 56\n7 x 9 = 63\n7 x 10 = 70\n",
+  "topics/04_loops/while_loop.c":
+    "Countdown:\n5...\n4...\n3...\n2...\n1...\nGo!\n\nEven numbers from 0 to 10:\n0 2 4 6 8 10 \n",
+  "topics/04_loops/do_while.c":
+    "Simulated menu (typed choice is hard-coded for the demo):\n 1) Say hello\n 2) Say goodbye\n 0) Quit\n-> Hello!\n 1) Say hello\n 2) Say goodbye\n 0) Quit\nExited menu.\n",
+  "topics/04_loops/break_continue.c":
+    "continue: skip multiples of 3\n1 2 4 5 7 8 10 \n\nbreak: stop when we hit 5\n1 2 3 4 \n",
+  "topics/04_loops/goto_label.c":
+    "Taking the error path with goto.\ncleanup: one place to release resources in larger programs.\nIn small programs, structured control flow is usually clearer.\n",
+  "topics/05_functions/basic_functions.c":
+    "square(6) = 36\ntwice_square(6) = 72\n",
+  "topics/05_functions/recursion.c":
+    "factorial(6) = 720\nfibonacci first 12 terms:\n0 1 1 2 3 5 8 13 21 34 55 89 \n",
+  "topics/05_functions/pass_by_value.c":
+    "Before swap_wrong: x=1 y=2\nAfter  swap_wrong: x=1 y=2  (unchanged \u2014 copies were swapped)\n",
+  "topics/06_arrays_strings/arrays_1d.c":
+    "Individual scores:\n  scores[0] = 88\n  scores[1] = 92\n  scores[2] = 79\n  scores[3] = 95\n  scores[4] = 84\n\nLength of this array (elements): 5\n",
+  "topics/06_arrays_strings/arrays_2d.c":
+    "Matrix 3x4:\n  1   2   3   4 \n  5   6   7   8 \n  9  10  11  12 \n",
+  "topics/06_arrays_strings/strings_basics.c":
+    "src:  \"learn\" (length 5)\ndest: \"learn\"\nPrinted with %s: learn\n",
+  "topics/07_pointers/pointer_basics.c":
+    "n  = 42\n&n = 0x16ee2640c\np  = 0x16ee2640c (same as &n)\n*p = 42 (value through pointer)\nq is NULL: yes\n",
+  "topics/07_pointers/pointer_arithmetic.c":
+    "Forward via pointer:\n10 20 30 40 \nSame using subscript for comparison:\n10 20 30 40 \n",
+  "topics/08_structs/struct_basics.c":
+    "\"The C Programming Language\" (1988), 272 pages\n",
+  "topics/08_structs/struct_array.c":
+    "Roster:\n  Ana      92\n  Ben      88\n  Cara     95\n",
+};
+
+/* ── State ─────────────────────────────────────────────────── */
+let curPath    = "";
+let curSrc     = "";
+let origSrc    = "";
+let isSplit    = sessionStorage.getItem("cp_split") === "1";
+let hintOff    = sessionStorage.getItem("cp_hint")  === "1";
+let hintTimer  = null;
+let jscppReady = false;   // set after loadJSCPP() resolves
+
+/* ── DOM refs ──────────────────────────────────────────────── */
+const app         = document.getElementById("app");
+const sidebar     = document.getElementById("sidebar");
+const sidebarClose= document.getElementById("sidebarClose");
+const overlay     = document.getElementById("overlay");
+const menuBtn     = document.getElementById("menuBtn");
+const fileTree    = document.getElementById("fileTree");
+const breadcrumbs = document.getElementById("breadcrumbs");
+const editorPane  = document.getElementById("editorPane");
+const termOut     = document.getElementById("termOut");
+const termBadge   = document.getElementById("termBadge");
+const badgeLabel  = document.getElementById("badgeLabel");
+const runBtn      = document.getElementById("runBtn");
+const layoutBtn   = document.getElementById("layoutBtn");
+const layoutLabel = document.getElementById("layoutLabel");
+const layoutHint  = document.getElementById("layoutHint");
+const hintApply   = document.getElementById("hintApply");
+const hintDismiss = document.getElementById("hintDismiss");
+const copyBtn     = document.getElementById("copyBtn");
+const clearBtn    = document.getElementById("clearBtn");
+const copyOutBtn  = document.getElementById("copyOutBtn");
+const outDot      = document.getElementById("outDot");
+const ntFiles     = document.getElementById("ntFiles");
+const ntCode      = document.getElementById("ntCode");
+const ntOutput    = document.getElementById("ntOutput");
+
+/* ── Build sidebar ─────────────────────────────────────────── */
+function buildTree() {
+  MANIFEST.forEach(chapter => {
+    const color = CH_COLORS[chapter.id] || "#8585a0";
+    const grp = document.createElement("div");
+    grp.className = "chapter-group";
+
+    const lbl = document.createElement("div");
+    lbl.className = "chapter-label";
+    lbl.innerHTML = `<span class="ch-dot" style="background:${color}"></span>${chapter.label}`;
+    grp.appendChild(lbl);
+
+    chapter.files.forEach(file => {
+      const item = document.createElement("div");
+      item.className = "file-item";
+      item.textContent = file.name + ".c";
+      item.onclick = () => selectFile(file, chapter, item);
+      grp.appendChild(item);
+    });
+
+    fileTree.appendChild(grp);
+  });
+}
+
+/* ── Sidebar open/close ────────────────────────────────────── */
+function updateMobileNavHighlight() {
+  const mt = app.getAttribute("data-mt") || "code";
+  const drawerOpen = sidebar.classList.contains("open");
+  ntFiles.classList.toggle("active", drawerOpen);
+  ntCode.classList.toggle("active", !drawerOpen && mt === "code");
+  ntOutput.classList.toggle("active", !drawerOpen && mt === "output");
+}
+
+function openSidebar() {
+  sidebar.classList.add("open");
+  overlay.classList.add("on");
+  menuBtn.setAttribute("aria-expanded", "true");
+  updateMobileNavHighlight();
+}
+
+function closeSidebar() {
+  sidebar.classList.remove("open");
+  overlay.classList.remove("on");
+  menuBtn.setAttribute("aria-expanded", "false");
+  updateMobileNavHighlight();
+}
+
+/* ── Mobile tab switching ──────────────────────────────────── */
+function setTab(tab) {
+  app.setAttribute("data-mt", tab);
+  updateMobileNavHighlight();
+  if (tab === "output") outDot.classList.remove("on");
+}
+
+/* ── Load a file ───────────────────────────────────────────── */
+async function selectFile(file, chapter, el) {
+  document.querySelectorAll(".file-item").forEach(e => e.classList.remove("selected"));
+  el.classList.add("selected");
+
+  breadcrumbs.innerHTML =
+    `<span class="bc-chapter">${chapter.label}</span>` +
+    `<span class="bc-sep">›</span>` +
+    `<span class="bc-file">${file.name}.c</span>`;
+
+  closeSidebar();
+  setTab("code");
+
+  runBtn.disabled = true;
+  layoutBtn.hidden = true;
+  copyBtn.hidden = true;
+  termOut.innerHTML = '<span class="term-placeholder">Run a program to see output here.</span>';
+  termBadge.className = "term-badge";
+  layoutHint.classList.remove("on");
+
+  editorPane.innerHTML = '<div class="empty"><div style="color:var(--text-3);font-size:12px">Loading…</div></div>';
+
+  try {
+    const res = await fetch(file.path);
+    if (!res.ok) throw new Error("not-found");
+    const raw = await res.text();
+    curPath = file.path;
+    origSrc = raw;
+    renderEditor(raw);
+    runBtn.disabled = false;
+    layoutBtn.hidden = false;
+    copyBtn.hidden = false;
+    scheduleHintCheck();
+  } catch {
+    editorPane.innerHTML = `<div class="empty">
+      <div class="empty-emoji">⚠️</div>
+      <div>Could not load <code style="color:var(--text-2)">${file.path}</code></div>
+      <div style="color:var(--text-3);font-size:11px;margin-top:6px">
+        Open via a local server (e.g. VS Code <em>Go Live</em>).
+      </div>
+    </div>`;
+  }
+}
+
+/* ── Render the code editor ────────────────────────────────── */
+function renderEditor(raw) {
+  const concept = (raw.match(/\*\s*CONCEPT:\s*(.*?)(?=\n)/) || [])[1]?.trim() || "";
+  const tryIt   = (raw.match(/\*\s*TRY IT:\s*(.*?)(?=\n)/)   || [])[1]?.trim() || "";
+  const code    = raw.replace(/\/\*[\s\S]*?\*\/\n+/, "").trim();
+  curSrc = code;
+
+  let html = "";
+
+  /* JSCPP unavailable banner — shown before metadata and editor */
+  if (!jscppReady) {
+    html += `
+      <div class="jscpp-banner" role="alert">
+        <span class="jscpp-banner-icon">⚠️</span>
+        <div>
+          <strong>Live execution unavailable</strong> — the browser C compiler
+          (<code>JSCPP</code>) could not be loaded, likely due to a network or
+          ad-blocker issue.<br>
+          <span style="margin-top:5px;display:block;color:var(--text-3)">
+            You can still browse and copy the code.
+            Clicking <strong>Run</strong> shows the correct reference output captured
+            from a real <code>gcc</code> build — everything is accurate, just not
+            interactive. Editing is disabled to avoid confusion.
+          </span>
+        </div>
+      </div>`;
+  }
+
+  if (concept || tryIt) {
+    html += `<div class="meta-card">`;
+    if (concept) html += `<div class="meta-row"><span class="meta-key">Concept</span><span class="meta-val">${concept}</span></div>`;
+    if (tryIt)   html += `<div class="meta-row"><span class="meta-key">Try it</span><span class="meta-val">${tryIt}</span></div>`;
+    html += `</div>`;
+  }
+
+  const roClass = jscppReady ? "" : " readonly";
+  const statusRO = jscppReady
+    ? `<button class="reset-btn" id="resetBtn" hidden>↩ Reset</button>
+       <div class="status-ml"><span style="color:var(--text-3)">⌘↵ to run</span></div>`
+    : `<span style="color:rgba(251,191,36,0.6);font-size:11px">read-only — compiler offline</span>`;
+
+  html += `
+    <div class="editor-box${roClass}" id="editorBox">
+      <div class="ed-scroll">
+        <textarea class="ed-ta" id="edTa"
+          spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"
+          ${jscppReady ? "" : 'readonly tabindex="-1" aria-label="Code (read-only — compiler unavailable)"'}
+        ></textarea>
+        <pre class="ed-hl" id="edHl" aria-hidden="true"><code class="language-c" id="edCode"></code></pre>
+      </div>
+      <div class="ed-status">
+        <span class="status-lang">C</span>
+        <span id="lineCount" style="color:var(--text-3)"></span>
+        ${statusRO}
+      </div>
+    </div>`;
+
+  editorPane.innerHTML = html;
+
+  const ta       = document.getElementById("edTa");
+  const hlPre    = document.getElementById("edHl");
+  const hlCode   = document.getElementById("edCode");
+  const lineEl   = document.getElementById("lineCount");
+  const resetBtn = jscppReady ? document.getElementById("resetBtn") : null;
+
+  function highlight(text) {
+    curSrc = text;
+    hlCode.textContent = text.endsWith("\n") ? text + " " : text;
+    hljs.highlightElement(hlCode);
+    lineEl.textContent = text.split("\n").length + " lines";
+    if (resetBtn) {
+      resetBtn.hidden = (text === origSrc.replace(/\/\*[\s\S]*?\*\/\n+/, "").trim());
+    }
+  }
+
+  ta.value = code;
+  highlight(code);
+
+  if (jscppReady) {
+    ta.oninput  = () => highlight(ta.value);
+    ta.onscroll = () => { hlPre.scrollTop = ta.scrollTop; hlPre.scrollLeft = ta.scrollLeft; };
+    ta.onkeydown = e => {
+      if (e.key === "Tab") {
+        e.preventDefault();
+        const s = ta.selectionStart, end = ta.selectionEnd;
+        ta.value = ta.value.slice(0, s) + "    " + ta.value.slice(end);
+        ta.selectionStart = ta.selectionEnd = s + 4;
+        highlight(ta.value);
+      }
+    };
+    if (resetBtn) {
+      resetBtn.onclick = () => {
+        const clean = origSrc.replace(/\/\*[\s\S]*?\*\/\n+/, "").trim();
+        ta.value = clean;
+        highlight(clean);
+      };
+    }
+  } else {
+    /* Keep scroll sync even in read-only so highlight layer follows */
+    ta.onscroll = () => { hlPre.scrollTop = ta.scrollTop; hlPre.scrollLeft = ta.scrollLeft; };
+  }
+
+  scheduleHintCheck();
+}
+
+/* ── Layout hint ───────────────────────────────────────────── */
+function scheduleHintCheck() {
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(() => {
+    if (hintOff || isSplit || window.innerWidth < 768) return;
+    const ta = document.getElementById("edTa");
+    if (!ta) return;
+    const overflow = ta.scrollHeight > ta.clientHeight + 16;
+    layoutHint.classList.toggle("on", overflow);
+  }, 140);
+}
+
+/* ── Split layout ──────────────────────────────────────────── */
+function applySplit(on) {
+  isSplit = on;
+  sessionStorage.setItem("cp_split", on ? "1" : "0");
+  app.classList.toggle("split", on);
+  layoutBtn.setAttribute("aria-pressed", on ? "true" : "false");
+  layoutLabel.textContent = on ? "Stacked" : "Two columns";
+  if (on) layoutHint.classList.remove("on");
+}
+
+/* ── Run ───────────────────────────────────────────────────── */
+function executeCode() {
+  runBtn.classList.add("running");
+  runBtn.disabled = true;
+  termOut.innerHTML = '<span style="color:var(--text-3)">Running\u2026</span>';
+  termBadge.className = "term-badge";
+
+  setTimeout(() => {
+    const out = [];
+    let ok = false;
+
+    try {
+      if (typeof JSCPP !== "undefined" && JSCPP.run) {
+        JSCPP.run(curSrc, "", {
+          stdio: { write: s => out.push(s) },
+          includes: { "stdio.h": "", "stddef.h": "", "string.h": "" }
+        });
+        ok = out.length > 0;
+      }
+    } catch (e) { console.log("JSCPP:", e.message || e); }
+
+    const text = ok ? out.join("") : (BAKED[curPath] || "(no output)");
+    const type = ok ? "live" : "fallback";
+
+    typeOutput(text, type);
+    termBadge.className = `term-badge ${type} show`;
+    badgeLabel.textContent = type;
+
+    runBtn.classList.remove("running");
+    runBtn.disabled = false;
+
+    /* Mobile: dot on output tab + auto-switch */
+    outDot.classList.add("on");
+    if (window.innerWidth < 768) setTab("output");
+  }, 60);
+}
+
+/* Typewriter effect for output */
+function typeOutput(text, type) {
+  const prefix = type === "live"
+    ? "$ ./program\n"
+    : "$ ./program   \u2014 reference output\n";
+  const full = prefix + text;
+  termOut.textContent = "";
+  const CHUNK = Math.max(3, Math.ceil(full.length / 40));
+  let i = 0;
+  function frame() {
+    const end = Math.min(i + CHUNK, full.length);
+    termOut.textContent = full.slice(0, end);
+    termOut.scrollTop = termOut.scrollHeight;
+    i = end;
+    if (i < full.length) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ── Utility: copy to clipboard with check feedback ────────── */
+function copyWithFeedback(getText, btn, original) {
+  navigator.clipboard.writeText(getText()).then(() => {
+    btn.textContent = "Copied!";
+    btn.style.color = "var(--success)";
+    setTimeout(() => { btn.textContent = original; btn.style.color = ""; }, 1600);
+  });
+}
+
+/* ── Bind all events ───────────────────────────────────────── */
+function bindEvents() {
+  menuBtn.onclick = openSidebar;
+  sidebarClose.onclick = closeSidebar;
+  /* pointerdown: reliable on iOS/Android; onclick alone can miss on some overlays */
+  overlay.addEventListener("pointerdown", e => {
+    if (!sidebar.classList.contains("open")) return;
+    e.preventDefault();
+    closeSidebar();
+  });
+
+  runBtn.onclick      = executeCode;
+  layoutBtn.onclick   = () => applySplit(!isSplit);
+  hintApply.onclick   = () => applySplit(true);
+  hintDismiss.onclick = () => {
+    hintOff = true;
+    sessionStorage.setItem("cp_hint", "1");
+    layoutHint.classList.remove("on");
+  };
+
+  copyBtn.onclick = () => {
+    navigator.clipboard.writeText(curSrc).then(() => {
+      const origHtml = copyBtn.innerHTML;
+      copyBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
+      setTimeout(() => copyBtn.innerHTML = origHtml, 1500);
+    });
+  };
+
+  clearBtn.onclick  = () => {
+    termOut.innerHTML = '<span class="term-placeholder">Run a program to see output here.</span>';
+    termBadge.className = "term-badge";
+  };
+  copyOutBtn.onclick = () => copyWithFeedback(() => termOut.textContent, copyOutBtn, "Copy");
+
+  ntFiles.onclick = () => {
+    if (sidebar.classList.contains("open")) closeSidebar();
+    else openSidebar();
+  };
+  ntCode.onclick   = () => { closeSidebar(); setTab("code"); };
+  ntOutput.onclick = () => { closeSidebar(); setTab("output"); };
+
+  window.addEventListener("resize", scheduleHintCheck);
+
+  document.addEventListener("keydown", e => {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault();
+      if (!runBtn.disabled) executeCode();
+    }
+    if (e.key === "Escape") closeSidebar();
+  });
+}
+
+/* ── Boot ──────────────────────────────────────────────────── */
+loadJSCPP().then(ok => {
+  jscppReady = ok;
+  if (!ok) {
+    console.warn("JSCPP unavailable — editing disabled, Run shows reference output.");
+    /* Mark the Run button so users get a visual hint */
+    runBtn.classList.add("reference-only");
+    runBtn.title = "Shows pre-baked reference output — live compiler unavailable";
+  }
+  buildTree();
+  bindEvents();
+  applySplit(isSplit);
+  setTab("code");
+});
+</script>
+</body>
+</html>
