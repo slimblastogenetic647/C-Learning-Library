@@ -40,6 +40,8 @@ jobs:
           cp playground.html _site/
           cp -r topics _site/
           cp site/index.html _site/index.html
+          cp site/404.html _site/404.html
+          touch _site/.nojekyll
 
       - uses: actions/configure-pages@v5
 

@@ -3,11 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="0;url=playground.html">
-  <title>C Playground</title>
-  <link rel="canonical" href="./playground.html">
+  <title>C Playground — C Learning Library</title>
+  <link rel="canonical" href="playground.html">
+  <script>
+    (function () {
+      var q = location.search || "";
+      var h = location.hash || "";
+      location.replace("playground.html" + q + h);
+    })();
+  </script>
+  <noscript>
+    <meta http-equiv="refresh" content="0;url=playground.html">
+  </noscript>
 </head>
-<body style="font-family:system-ui,sans-serif;background:#0d0d12;color:#888;padding:2rem;">
-  <p><a href="playground.html" style="color:#7c72f0">Open C Playground →</a></p>
+<body style="font-family:system-ui,sans-serif;background:#0d0d12;color:#e0e0ef;padding:2rem;line-height:1.6">
+  <h1 style="font-size:1.25rem;font-weight:600;margin:0 0 0.5rem">C Playground</h1>
+  <p style="color:#8080a0;margin:0 0 1rem">If you are not redirected automatically, open the app below.</p>
+  <p><a href="playground.html" style="color:#7c72f0;font-weight:500">Open C Playground →</a></p>
 </body>
 </html>
