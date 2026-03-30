@@ -20,7 +20,8 @@ Learn C from *hello world* to *structs*
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Language](https://img.shields.io/badge/Language-C-orange)
 ![Beginner Friendly](https://img.shields.io/badge/Level-Beginner-yellow)
-[![CI and Pages](https://github.com/chama-x/C-Learning-Library/actions/workflows/pages.yml/badge.svg)](https://github.com/chama-x/C-Learning-Library/actions/workflows/pages.yml)
+[![CI](https://github.com/chama-x/C-Learning-Library/actions/workflows/ci.yml/badge.svg)](https://github.com/chama-x/C-Learning-Library/actions/workflows/ci.yml)
+[![Pages](https://github.com/chama-x/C-Learning-Library/actions/workflows/pages.yml/badge.svg)](https://github.com/chama-x/C-Learning-Library/actions/workflows/pages.yml)
 
 </div>
 
@@ -59,7 +60,7 @@ Run the same examples in the browser (edit, **Run**, optional live JSCPP + baked
 
 **[C Playground (GitHub Pages)](https://chama-x.github.io/C-Learning-Library/playground.html)** · [site root (redirect)](https://chama-x.github.io/C-Learning-Library/)
 
-**One-time setup (repo owner):** [Settings → Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow) → **Build and deployment** → Source: **GitHub Actions**.
+**One-time setup (repo owner):** In the repo, [Settings → Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow) → **Build and deployment** → Source: **GitHub Actions**, then save. (GitHub does not allow the workflow token to create the site by itself.) After that, push to `main` or re-run the **Pages** workflow from the Actions tab.
 
 **What CI checks on every push / PR**
 
@@ -135,7 +136,8 @@ Run the same examples in the browser (edit, **Run**, optional live JSCPP + baked
 topics/01_hello_world/ … 08_structs/   ← .c files + previews/
 scripts/                              ← run_all, preview helpers, verify_playground_manifest.py
 site/                                 ← index.html for GitHub Pages root
-.github/workflows/pages.yml           ← CI + Pages deploy
+.github/workflows/ci.yml              ← build + manifest checks (every PR/push)
+.github/workflows/pages.yml           ← deploy to GitHub Pages (after Pages enabled)
 bin/                                  ← compiled binaries (git-ignored)
 setup.sh · Makefile · playground.html · README.md
 ```

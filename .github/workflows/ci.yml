@@ -1,0 +1,30 @@
+# Fast checks for every push / PR (no GitHub Pages required).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify C build & playground data
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y gcc make
+
+      - name: Build all examples (gcc -Wall -Wextra -std=c11 -pedantic)
+        run: make all
+
+      - name: Verify playground MANIFEST paths & BAKED keys
+        run: python3 scripts/verify_playground_manifest.py
+
+      - name: Check playground.html size
+        run: test -s playground.html && test "$(wc -c < playground.html)" -ge 2000
