@@ -20,7 +20,7 @@ Learn C from *hello world* to *structs*
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Language](https://img.shields.io/badge/Language-C-orange)
 ![Beginner Friendly](https://img.shields.io/badge/Level-Beginner-yellow)
-[![CI and Pages](https://github.com/chama-x/c-practice-2/actions/workflows/pages.yml/badge.svg)](https://github.com/chama-x/c-practice-2/actions/workflows/pages.yml)
+[![CI and Pages](https://github.com/chama-x/C-Learning-Library/actions/workflows/pages.yml/badge.svg)](https://github.com/chama-x/C-Learning-Library/actions/workflows/pages.yml)
 
 </div>
 
@@ -31,8 +31,8 @@ Learn C from *hello world* to *structs*
 Run these in Terminal or Command Prompt one by one!
 
 ```bash
-git clone https://github.com/chama-x/c-practice-2.git
-cd c-practice-2
+git clone https://github.com/chama-x/C-Learning-Library.git
+cd C-Learning-Library
 chmod +x setup.sh && ./setup.sh   # checks gcc, make & optional tools
 make run-all                      # runs every example in order
 ```
@@ -57,7 +57,7 @@ make run TOPIC=01_hello_world/hello_world
 
 Run the same examples in the browser (edit, **Run**, optional live JSCPP + baked `gcc` output):
 
-**[C Playground (GitHub Pages)](https://chama-x.github.io/c-practice-2/playground.html)** · [site root (redirect)](https://chama-x.github.io/c-practice-2/)
+**[C Playground (GitHub Pages)](https://chama-x.github.io/C-Learning-Library/playground.html)** · [site root (redirect)](https://chama-x.github.io/C-Learning-Library/)
 
 **One-time setup (repo owner):** [Settings → Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow) → **Build and deployment** → Source: **GitHub Actions**.
 
@@ -69,7 +69,7 @@ Run the same examples in the browser (edit, **Run**, optional live JSCPP + baked
 | `scripts/verify_playground_manifest.py` | Each `MANIFEST` path exists on disk and matches `BAKED` keys in `playground.html` |
 | `playground.html` size | File is present and non-trivial (catch truncated uploads) |
 
-*Fork? Replace `chama-x/c-practice-2` in URLs with your `user/repo`.*
+*Fork? Replace `chama-x/C-Learning-Library` in URLs with your `user/repo`.*
 
 ---
 
