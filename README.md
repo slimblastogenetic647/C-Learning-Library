@@ -58,11 +58,10 @@ make run TOPIC=01_hello_world/hello_world
 
 Run the same examples in the browser (edit, **Run**, optional live JSCPP + baked `gcc` output):
 
-**[C Playground (GitHub Pages)](https://chama-x.github.io/C-Learning-Library/playground.html)** · [site root](https://chama-x.github.io/C-Learning-Library/) (redirects into the app)
+**Live app (default GitHub Pages, no custom domain):**  
+[Open playground](https://chama-x.github.io/C-Learning-Library/playground.html) · [site root](https://chama-x.github.io/C-Learning-Library/) (redirects into the app)
 
-**One-time setup (repo owner):** In the repo, [Settings → Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow) → **Build and deployment** → Source: **GitHub Actions**, then save. (GitHub does not allow the workflow token to create the site by itself.) After that, push to `main` or re-run the **Pages** workflow from the Actions tab.
-
-**Custom domain looks broken?** If **Settings → Pages → Custom domain** is set (e.g. `chamaththiwanka.me`), GitHub sends all traffic there. If DNS or HTTPS is not set up correctly, the site can show a blank page, “Redirecting…”, or a connection error. Fix: [verify DNS for GitHub Pages](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site) and turn on **Enforce HTTPS**, or **clear the custom domain** so `https://chama-x.github.io/C-Learning-Library/` loads the app directly.
+**One-time setup (repo owner):** [Settings → Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow) → **Build and deployment** → Source: **GitHub Actions**. Leave **Custom domain** empty to keep the free `https://chama-x.github.io/C-Learning-Library/` URL. Then push to `main` or re-run the **Pages** workflow.
 
 **What CI checks on every push / PR**
 

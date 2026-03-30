@@ -1,5 +1,6 @@
-# Deploy playground to GitHub Pages. Requires: Settings → Pages → Source: GitHub Actions (once).
-# The default GITHUB_TOKEN cannot auto-create a Pages site; enable Pages in the repo first.
+# Deploy to default (free) GitHub project Pages: https://<owner>.github.io/<repo>/
+# Leave Settings → Pages → Custom domain empty so traffic stays on github.io.
+# This workflow never publishes a CNAME file in the artifact.
 name: Pages
 
 on:
@@ -42,6 +43,19 @@ jobs:
           cp site/index.html _site/index.html
           cp site/404.html _site/404.html
           touch _site/.nojekyll
+          rm -f _site/CNAME
+
+      - name: Default github.io URL (no custom domain)
+        run: |
+          OWNER="${{ github.repository_owner }}"
+          REPO_LC=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
+          {
+            echo "## Default GitHub Pages URL"
+            echo "Published for **default** project Pages (leave Custom domain empty in repo Settings):"
+            echo ""
+            echo "- App: \`https://${OWNER}.github.io/${REPO_LC}/playground.html\`"
+            echo "- Root: \`https://${OWNER}.github.io/${REPO_LC}/\`"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/configure-pages@v5
 
@@ -65,3 +79,15 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Default github.io URL (no custom domain)
+        run: |
+          OWNER="${{ github.repository_owner }}"
+          REPO_LC=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
+          {
+            echo "## Default GitHub Pages URL"
+            echo "Use the **github.io** links below unless you configure a custom domain in Settings → Pages."
+            echo ""
+            echo "- \`https://${OWNER}.github.io/${REPO_LC}/playground.html\`"
+            echo "- \`https://${OWNER}.github.io/${REPO_LC}/\`"
+          } >> "$GITHUB_STEP_SUMMARY"

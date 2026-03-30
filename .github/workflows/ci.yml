@@ -1,4 +1,5 @@
 # Fast checks for every push / PR (no GitHub Pages required).
+# Live app: default project Pages only — see Pages workflow (github.io, no CNAME in artifact).
 name: CI
 
 on:
@@ -28,3 +29,14 @@ jobs:
 
       - name: Check playground.html size
         run: test -s playground.html && test "$(wc -c < playground.html)" -ge 2000
+
+      - name: Default GitHub Pages URL (reference)
+        if: github.event_name == 'push'
+        run: |
+          OWNER="${{ github.repository_owner }}"
+          REPO_LC=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
+          {
+            echo "## After merge to \`main\`"
+            echo "The **Pages** workflow deploys to default **github.io** (leave Custom domain empty):"
+            echo "- \`https://${OWNER}.github.io/${REPO_LC}/playground.html\`"
+          } >> "$GITHUB_STEP_SUMMARY"
