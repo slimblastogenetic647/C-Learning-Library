@@ -13,7 +13,7 @@
 
 **A hands-on C programming library built for absolute beginners.**
 
-Learn C from *hello world* to *structs* — runnable examples, auto-generated preview images, zero config.
+Learn C from *hello world* to *structs*
 
 **macOS** · **Linux** · **Windows (WSL/MSYS2)**
 
@@ -26,6 +26,8 @@ Learn C from *hello world* to *structs* — runnable examples, auto-generated pr
 ---
 
 ## ⚡ Quick Start
+
+Run these in Terminal or Command Prompt one by one!
 
 ```bash
 git clone https://github.com/chamaththiwanka/c-learning-library.git
