@@ -21,7 +21,7 @@ Learn C from *hello world* to *structs*
 ![Language](https://img.shields.io/badge/Language-C-orange)
 ![Beginner Friendly](https://img.shields.io/badge/Level-Beginner-yellow)
 [![CI](https://github.com/chama-x/C-Learning-Library/actions/workflows/ci.yml/badge.svg)](https://github.com/chama-x/C-Learning-Library/actions/workflows/ci.yml)
-[![Pages](https://github.com/chama-x/C-Learning-Library/actions/workflows/pages.yml/badge.svg)](https://github.com/chama-x/C-Learning-Library/actions/workflows/pages.yml)
+[![Vercel](https://img.shields.io/badge/Vercel-live-000?logo=vercel&logoColor=white)](https://c-practice-2.vercel.app/)
 
 </div>
 
@@ -54,14 +54,13 @@ make run TOPIC=01_hello_world/hello_world
 
 ---
 
-## 🌐 Web playground (GitHub Pages)
+## 🌐 Web playground (Vercel)
 
 Run the same examples in the browser (edit, **Run**, optional live JSCPP + baked `gcc` output):
 
-**Live app (default GitHub Pages, no custom domain):**  
-[Open playground](https://chama-x.github.io/C-Learning-Library/playground.html) · [site root](https://chama-x.github.io/C-Learning-Library/) (redirects into the app)
+**Live app:** [https://c-practice-2.vercel.app/](https://c-practice-2.vercel.app/) (root serves `playground.html` via `vercel.json`)
 
-**One-time setup (repo owner):** [Settings → Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow) → **Build and deployment** → Source: **GitHub Actions**. Leave **Custom domain** empty to keep the free `https://chama-x.github.io/C-Learning-Library/` URL. Then push to `main` or re-run the **Pages** workflow.
+**Deploy updates** (with [Vercel CLI](https://vercel.com/docs/cli) logged in): from the repo root, `vercel deploy --prod` (use `--scope <team>` if your account requires it). `vercel.json` + `playground.html` + `topics/` are all that’s needed for hosting.
 
 **What CI checks on every push / PR**
 
@@ -71,7 +70,7 @@ Run the same examples in the browser (edit, **Run**, optional live JSCPP + baked
 | `scripts/verify_playground_manifest.py` | Each `MANIFEST` path exists on disk and matches `BAKED` keys in `playground.html` |
 | `playground.html` size | File is present and non-trivial (catch truncated uploads) |
 
-*Fork? Replace `chama-x/C-Learning-Library` in URLs with your `user/repo`.*
+*Fork? Replace repo links and redeploy under your own Vercel project.*
 
 ---
 
@@ -136,9 +135,8 @@ Run the same examples in the browser (edit, **Run**, optional live JSCPP + baked
 ```
 topics/01_hello_world/ … 08_structs/   ← .c files + previews/
 scripts/                              ← run_all, preview helpers, verify_playground_manifest.py
-site/                                 ← index.html + 404.html for GitHub Pages
 .github/workflows/ci.yml              ← build + manifest checks (every PR/push)
-.github/workflows/pages.yml           ← deploy to GitHub Pages (after Pages enabled)
+vercel.json · .vercelignore           ← static deploy to Vercel
 bin/                                  ← compiled binaries (git-ignored)
 setup.sh · Makefile · playground.html · README.md
 ```
