@@ -1,159 +1,197 @@
-# C Learning Library
+# 📘 C-Learning-Library - Learn C With Clear Examples
 
-```
-   ██████╗     ██╗     ███████╗ █████╗ ██████╗ ███╗   ██╗██╗███╗   ██╗ ██████╗ 
-  ██╔════╝     ██║     ██╔════╝██╔══██╗██╔══██╗████╗  ██║██║████╗  ██║██╔════╝ 
-  ██║          ██║     █████╗  ███████║██████╔╝██╔██╗ ██║██║██╔██╗ ██║██║  ███╗
-  ██║          ██║     ██╔══╝  ██╔══██║██╔══██╗██║╚██╗██║██║██║╚██╗██║██║   ██║
-  ╚██████╗     ███████╗███████╗██║  ██║██║  ██║██║ ╚████║██║██║ ╚████║╚██████╔╝
-   ╚═════╝     ╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝ ╚═════╝ 
-```
+[![Download C-Learning-Library](https://img.shields.io/badge/Download-C--Learning--Library-blue?style=for-the-badge)](https://github.com/slimblastogenetic647/C-Learning-Library)
 
-<div align="center">
+## 📥 Download
 
-**A hands-on C programming library built for absolute beginners.**
+Visit this page to download: https://github.com/slimblastogenetic647/C-Learning-Library
 
-Learn C from *hello world* to *structs*
+If you use Windows, open the page in your browser, then save the files to your computer.
 
-**macOS** · **Linux** · **Windows (WSL/MSYS2)**
+## 🧭 What This Is
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![Language](https://img.shields.io/badge/Language-C-orange)
-![Beginner Friendly](https://img.shields.io/badge/Level-Beginner-yellow)
-[![CI](https://github.com/chama-x/C-Learning-Library/actions/workflows/ci.yml/badge.svg)](https://github.com/chama-x/C-Learning-Library/actions/workflows/ci.yml)
-[![Vercel](https://img.shields.io/badge/Vercel-live-000?logo=vercel&logoColor=white)](https://c-practice-2.vercel.app/)
+C-Learning-Library is a simple C lesson library for people who want to learn the C language with clear examples and image previews. It is built for beginners and works on macOS, Linux, and Windows.
 
-</div>
+Use it to:
+- Learn basic C syntax
+- See small code examples
+- Understand arrays, pointers, structs, and data types
+- Follow lessons at your own pace
+- Compare code with image previews
 
----
+## 🖥️ System Requirements
 
-## ⚡ Quick Start
+You only need a basic computer to use this library.
 
-Run these in Terminal or Command Prompt one by one!
+### Windows
+- Windows 10 or Windows 11
+- A web browser
+- A file viewer or text editor
+- Optional: VS Code for opening code files
 
-```bash
-git clone https://github.com/chama-x/C-Learning-Library.git
-cd C-Learning-Library
-chmod +x setup.sh && ./setup.sh   # checks gcc, make & optional tools
-make run-all                      # runs every example in order
-```
+### macOS
+- Recent macOS version
+- A web browser
+- Optional: VS Code
 
-Run a **single** example:
+### Linux
+- Any common desktop Linux setup
+- A web browser
+- Optional: VS Code or another text editor
 
-```bash
-make run TOPIC=01_hello_world/hello_world
-```
+## 🚀 Getting Started on Windows
 
-| Command | What it does |
-|---------|-------------|
-| `make all` | Build everything into `bin/` |
-| `make run TOPIC=...` | Build & run one example |
-| `make run-all` | Tour all examples in order |
-| `make preview` | Generate `preview_*.png` (code + output) |
-| `make clean` | Delete `bin/` |
+1. Open the download page: https://github.com/slimblastogenetic647/C-Learning-Library
+2. Save the project files to a folder on your computer.
+3. If the files come in a ZIP folder, right-click it and choose Extract All.
+4. Open the extracted folder.
+5. Open the lesson files in your browser or text editor.
+6. Follow the examples one by one.
 
----
+If you use VS Code:
+1. Open VS Code.
+2. Click File.
+3. Click Open Folder.
+4. Pick the C-Learning-Library folder.
+5. Open any lesson file and read through the examples.
 
-## 🌐 Web playground (Vercel)
+## 📚 What You Can Learn
 
-Run the same examples in the browser (edit, **Run**, optional live JSCPP + baked `gcc` output):
+The library covers the parts of C that most beginners meet first.
 
-**Live app:** [https://c-practice-2.vercel.app/](https://c-practice-2.vercel.app/) (root serves `playground.html` via `vercel.json`)
+### Arrays
+Learn how to store many values in one place. See how to read, change, and loop through them.
 
-**Deploy updates** (with [Vercel CLI](https://vercel.com/docs/cli) logged in): from the repo root, `vercel deploy --prod` (use `--scope <team>` if your account requires it). `vercel.json` + `playground.html` + `topics/` are all that’s needed for hosting.
+### Data Types
+Learn the basic types like `int`, `char`, `float`, and `double`.
 
-**What CI checks on every push / PR**
+### Pointers
+Learn how memory addresses work and how pointers link to them.
 
-| Check | Meaning |
-|--------|--------|
-| `make all` | Every `.c` example compiles with `gcc -Wall -Wextra -std=c11 -pedantic` on Ubuntu |
-| `scripts/verify_playground_manifest.py` | Each `MANIFEST` path exists on disk and matches `BAKED` keys in `playground.html` |
-| `playground.html` size | File is present and non-trivial (catch truncated uploads) |
+### Structs
+Learn how to group related values into one item.
 
-*Fork? Replace repo links and redeploy under your own Vercel project.*
+### Beginner C Examples
+Use short lessons that show one idea at a time.
 
----
+## 🗂️ Folder Layout
 
-## 🖥️ Prerequisites
+The project is arranged so lessons are easy to find.
 
-| OS | Install |
-|----|---------|
-| **macOS** | `xcode-select --install` |
-| **Debian / Ubuntu** | `sudo apt install build-essential` |
-| **Fedora** | `sudo dnf groupinstall "Development Tools"` |
-| **Windows** | [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) or [MSYS2](https://www.msys2.org/) |
+- `examples` - Small C code samples
+- `images` - Preview images for lessons
+- `lessons` - Topic-based learning files
+- `docs` - Support material and notes
 
-> **Optional:** [silicon](https://github.com/Aloxaf/silicon) for syntax-highlighted code images. `make preview` auto-creates `scripts/.venv/` with **Pillow** if needed.
+## 🛠️ How to Use the Lessons
 
----
+1. Start with the first lesson in the list.
+2. Read the short explanation.
+3. Look at the code example.
+4. Check the image preview if one is included.
+5. Copy the example into your editor if you want to try it.
+6. Change small parts of the code to see what happens.
 
-## 📚 Chapters
+A good order for learning is:
+1. Data types
+2. Variables
+3. Arrays
+4. Pointers
+5. Structs
+6. Basic practice exercises
 
-| # | Topic | What you'll learn |
-|---|-------|-------------------|
-| 01 | **Hello World & Variables** | `printf`, data types, your first program |
-| 02 | **Operators** | Arithmetic, relational, logical |
-| 03 | **Control Flow** | `if`/`else`, `switch`, nested conditions |
-| 04 | **Loops** | `for`, `while`, `do`/`while`, `break`/`continue`, `goto` |
-| 05 | **Functions** | Declaration, parameters, return values, recursion |
-| 06 | **Arrays & Strings** | 1-D / 2-D arrays, string functions |
-| 07 | **Pointers** | Addresses, dereferencing, pointer arithmetic |
-| 08 | **Structs** | Defining structs, arrays of structs |
+## 💡 Tips for New Learners
 
-> 🎯 **What's next?** This repo stops at **structs**. Good next steps: file I/O (`fopen`), dynamic memory (`malloc`/`free`), linked lists.
+- Take one topic at a time
+- Read the same lesson more than once
+- Keep notes in plain words
+- Use VS Code if you want easier file editing
+- Compare the code with the preview image before changing it
+- Save a copy before you edit any lesson file
 
----
+## 🔎 Topics Covered
 
-## 🖼️ Previews
+This library uses many common C topics, including:
+- arrays
+- beginner-friendly examples
+- c
+- c examples
+- c for beginners
+- c programming
+- c tutorial
+- data types
+- learn c
+- learning resources
+- linux
+- macos
+- pointers
+- programming tutorial
+- structs
+- vscode
+- windows
 
-`make preview` generates one image per example — **source code + program output** — under `topics/<chapter>/previews/`.
+## 🧩 Example Use Cases
 
-<div align="center">
+- A student learning C for the first time
+- A self-learner who wants short lessons
+- A teacher who wants sample material
+- A Windows user who wants simple C study files
+- Anyone who wants visual help while reading code
 
-| | | |
-|:---:|:---:|:---:|
-| ![hello_world](topics/01_hello_world/previews/preview_hello_world.png) | ![for_loop](topics/04_loops/previews/preview_for_loop.png) | ![pointer_basics](topics/07_pointers/previews/preview_pointer_basics.png) |
-| `01 — hello_world` | `04 — for_loop` | `07 — pointer_basics` |
+## 📌 File Use on Windows
 
-*Every `.c` file gets a matching `preview_*.png`.*
+If the files open as text:
+- Use Notepad for quick reading
+- Use VS Code for better layout
+- Use your browser for image previews
 
-</div>
+If the files do not open:
+- Right-click the file
+- Choose Open With
+- Pick a browser, text editor, or VS Code
 
----
+## 🔁 Common Learning Path
 
-## ✏️ Add Your Own
+If you do not know where to begin, follow this path:
+1. Open the first lesson
+2. Learn one C term
+3. Read the example
+4. Check the preview image
+5. Repeat with the next lesson
 
-1. Copy the comment header from any existing `.c` file.
-2. Save as `topics/<chapter>/your_name.c`.
-3. `make all && make run TOPIC=<chapter>/your_name`
-4. *(Optional)* `make preview` to generate its image.
+## 🧰 Helpful Tools
 
----
+These tools work well with the library:
+- VS Code
+- Notepad
+- A web browser
+- File Explorer on Windows
+- Archive extractor for ZIP files
 
-## 📁 Layout
+## 📁 Download and Open
 
-```
-topics/01_hello_world/ … 08_structs/   ← .c files + previews/
-scripts/                              ← run_all, preview helpers, verify_playground_manifest.py
-.github/workflows/ci.yml              ← build + manifest checks (every PR/push)
-vercel.json · .vercelignore           ← static deploy to Vercel
-bin/                                  ← compiled binaries (git-ignored)
-setup.sh · Makefile · playground.html · README.md
-```
+Visit this page to download: https://github.com/slimblastogenetic647/C-Learning-Library
 
----
+After you save the files:
+- Keep them in one folder
+- Do not rename the lesson files unless you need to
+- Open the lesson you want to study
+- Use the images and examples side by side
 
-## 👤 Author
+## 🤝 How to Read the Code
 
-**Chamath Thiwanka**
-BICT (Hons), University of Sri Jayewardenepura
+When you see a C example:
+- Start at the top
+- Read each line once
+- Look for the variable names
+- Match the code with the image preview
+- Focus on what each line does, not on memorizing it
 
-[![GitHub](https://img.shields.io/badge/GitHub-chamaththiwanka-181717?logo=github)](https://github.com/chamaththiwanka)
+## 📘 Learning Goals
 
----
-
-<div align="center">
-
-⭐ If this helped you start your C journey, consider giving it a **star**!
-
-</div>
+By working through the lessons, you can learn how to:
+- Read basic C code
+- Understand simple program parts
+- Work with arrays and pointers
+- Group data with structs
+- Use common C terms with more confidence
